@@ -121,7 +121,7 @@ def updateTask(request, id):
     except Exception as e:
       message = {"message": "error occurred"}
       return Response(message, status=status.HTTP_400_BAD_REQUEST)
-    message= {"message": "Invalid Token"}
+  message= {"message": "Invalid Token"}
   return Response(message)
 
 @api_view(['Delete'])
