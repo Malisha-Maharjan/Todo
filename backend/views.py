@@ -12,6 +12,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import Todo
 from .serializer import ToDoSerializer, UserSerializer
+from .token_verify import verify_token
 
 logger = logging.getLogger(__name__)
 
@@ -53,71 +54,86 @@ def userLogin(request):
 
 @api_view(['Post'])
 def addToDo(request):
-  data = json.loads(request.body)
-  logger.warning(data)
-  try:
-    user = User.objects.get(username= data['username'])
-  except Exception as e:
-    return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
-  try:
-    task = Todo(task=data['task'],user = user)
-    logger.warning(task.task)
-    task.save()
-    serializer = ToDoSerializer(task, many=False)
-    logger.warning(serializer.data)
-  except Exception as e:
-    return Response(str(e))
-  message = {"message": serializer.data}
-  return Response(message, status=status.HTTP_200_OK)
+  if verify_token(request=request):
+    data = json.loads(request.body)
+    logger.warning(data)
+    try:
+      user = User.objects.get(username= data['username'])
+    except Exception as e:
+      return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
+    try:
+      task = Todo(task=data['task'],user = user)
+      logger.warning(task.task)
+      task.save()
+      serializer = ToDoSerializer(task, many=False)
+      logger.warning(serializer.data)
+    except Exception as e:
+      return Response(str(e))
+    message = {"message": serializer.data}
+    return Response(message, status=status.HTTP_200_OK)
+  message= {"message": "Invalid Token"}
+  return Response(message)
 
 @api_view(['Get'])
 def getToDo(request, username):
-  try:
-    user = User.objects.get(username=username)
-    task = Todo.objects.filter(user=user)
-    logger.warning(task)
-    if task:
-      serializer = ToDoSerializer(task, many=True)
-      message = {"message": serializer.data}
-      return Response(message)
-    message = {"message": "No Task Added"}
-    return Response(message, status=status.HTTP_200_OK)
-  except Exception as e:
-    message= {"message": "error occurred."}
-    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  if verify_token(request=request):
+    try:
+      user = User.objects.get(username=username)
+      task = Todo.objects.filter(user=user)
+      logger.warning(task)
+      if task:
+        serializer = ToDoSerializer(task, many=True)
+        message = {"message": serializer.data}
+        return Response(message)
+      message = {"message": "No Task Added"}
+      return Response(message, status=status.HTTP_200_OK)
+    except Exception as e:
+      message= {"message": "error occurred."}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  message= {"message": "Invalid Token"}
+  return Response(message)
 
 @api_view(['Put'])
 def completedTask(request, id):
-  try:
-    task = Todo.objects.get(pk=id)
-    task.is_completed = True
-    task.save()
-    message = {"message": "Task completed"}
-    return Response(message, status=status.HTTP_200_OK)
-  except Exception as e:
-    message = {"message": "error occurred"}
-    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  if verify_token(request=request):
+    try:
+      task = Todo.objects.get(pk=id)
+      task.is_completed = True
+      task.save()
+      message = {"message": "Task completed"}
+      return Response(message, status=status.HTTP_200_OK)
+    except Exception as e:
+      message = {"message": "error occurred"}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  message= {"message": "Invalid Token"}
+  return Response(message)
   
 @api_view(['Put'])
 def updateTask(request, id):
-  try:
-    data = json.loads(request.body)
-    task = Todo.objects.get(pk=id)
-    task.task = data['task']
-    task.save()
-    message = {"message": "updated"}
-    return Response(message, status=status.HTTP_200_OK)
-  except Exception as e:
-    message = {"message": "error occurred"}
-    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  if verify_token(request=request):
+    try:
+      data = json.loads(request.body)
+      task = Todo.objects.get(pk=id)
+      task.task = data['task']
+      task.save()
+      message = {"message": "updated"}
+      return Response(message, status=status.HTTP_200_OK)
+    except Exception as e:
+      message = {"message": "error occurred"}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    message= {"message": "Invalid Token"}
+  return Response(message)
 
 @api_view(['Delete'])
 def deleteTask(request, id):
-  try:
-    task = Todo.objects.get(pk=id)
-    task.delete()
-    message = {'message': "Deleted successfully"}
-    return Response(message, status=status.HTTP_200_OK)
-  except Exception as e:
-    message = {"message": str(e)}
-    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  if verify_token(request=request):
+    try:
+      task = Todo.objects.get(pk=id)
+      task.delete()
+      message = {'message': "Deleted successfully"}
+      return Response(message, status=status.HTTP_200_OK)
+    except Exception as e:
+      message = {"message": str(e)}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
+  message= {"message": "Invalid Token"}
+  return Response(message)
