@@ -111,3 +111,13 @@ def updateTask(request, id):
     message = {"message": "error occurred"}
     return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['Delete'])
+def deleteTask(request, id):
+  try:
+    task = Todo.objects.get(pk=id)
+    task.delete()
+    message = {'message': "Deleted successfully"}
+    return Response(message, status=status.HTTP_200_OK)
+  except Exception as e:
+    message = {"message": str(e)}
+    return Response(message, status=status.HTTP_400_BAD_REQUEST)

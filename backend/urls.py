@@ -9,4 +9,5 @@ urlpatterns = [
     path('get/todo/<str:username>', getToDo),
     path('complete/todo/<int:id>', completedTask),
     path('update/todo/<int:id>', updateTask),
+    path('delete/todo/<int:id>', deleteTask),
 ]
