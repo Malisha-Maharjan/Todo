@@ -12,7 +12,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import Todo
 from .serializer import ToDoSerializer, UserSerializer
-from .token_verify import verify_token
+from .utils.token.generate_token import generateToken
+from .utils.token.verify_token import verify_token
 
 logger = logging.getLogger(__name__)
 
@@ -22,33 +23,43 @@ def createUser(request):
     data = json.loads(request.body)
 
     userSerializer = UserSerializer(data=data)
+    user = User.objects.filter(username=data['username'])
+    if(len(user) != 0):
+      message = {"message": "Username already exist", "data":[]}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
     logger.warning(data)
     try:
       userSerializer.is_valid(raise_exception=True)
     except Exception as e :
-      return Response(str(e))
+      message = {"message": "Invalid Field", "data":[]}
+      return Response(message, status=status.HTTP_400_BAD_REQUEST)
     if(userSerializer.is_valid()):
       userSerializer.save()
-      message = {"message": "successfully saved"}
+      user = User.objects.get(username=userSerializer.data['username'])
+      message = {"message": "successfully saved", "data": generateToken(user)}
       return Response(message, status=status.HTTP_200_OK)
   except Exception as e:
-    message = {"message": "Error occured"}
+    message = {"message": "Error occured", "data": []}
     return Response(message, status=status.HTTP_400_BAD_REQUEST)
   return Response("ok")
   
-@api_view(['Get'])
+@api_view(['Post'])
 def userLogin(request):
   user = json.loads(request.body)
+  logger.warning(user)
   try:
     user = User.objects.get(password=user['password'], username=user['username'])
     serializer = UserSerializer(user, many=False)
-    token = AccessToken.for_user(user)
-    token['username'] = user.username
-    logger.warning(token)
-    token = {"message": str(token)}
+    # token = AccessToken.for_user(user)
+    # token['username'] = user.username
+    # logger.warning(token)
+    logger.warning("token")
+
+    token = {"message": "Login successful", "data": generateToken(user)}
+    logger.warning("token", token)
     return Response(token, status=status.HTTP_200_OK)
   except Exception as e:
-    message={"message": "Invalid UserName or password"}
+    message={"message": "Invalid UserName or password", "data": []}
     return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -56,6 +67,7 @@ def userLogin(request):
 def addToDo(request):
   if verify_token(request=request):
     data = json.loads(request.body)
+    # logger.warning(data)
     logger.warning(data)
     try:
       user = User.objects.get(username= data['username'])
@@ -69,7 +81,7 @@ def addToDo(request):
       logger.warning(serializer.data)
     except Exception as e:
       return Response(str(e))
-    message = {"message": serializer.data}
+    message = {"message": "Successful", "data":serializer.data}
     return Response(message, status=status.HTTP_200_OK)
   message= {"message": "Invalid Token"}
   return Response(message)
@@ -83,29 +95,31 @@ def getToDo(request, username):
       logger.warning(task)
       if task:
         serializer = ToDoSerializer(task, many=True)
-        message = {"message": serializer.data}
+        message = {"message": "", "data":serializer.data}
+        logger.warning(serializer.data)
         return Response(message)
-      message = {"message": "No Task Added"}
+      message = {"message": "No Task Added", "data": []}
       return Response(message, status=status.HTTP_200_OK)
     except Exception as e:
-      message= {"message": "error occurred."}
+      message= {"message": "error occurred.", "data": []}
       return Response(message, status=status.HTTP_400_BAD_REQUEST)
   message= {"message": "Invalid Token"}
   return Response(message)
 
 @api_view(['Put'])
-def completedTask(request, id):
+def toggleTask(request, id):
   if verify_token(request=request):
+    data = json.loads(request.body)
     try:
       task = Todo.objects.get(pk=id)
-      task.is_completed = True
+      task.is_completed = data['checked']
       task.save()
-      message = {"message": "Task completed"}
+      message = {"message": "Task completed", "data":[]}
       return Response(message, status=status.HTTP_200_OK)
     except Exception as e:
-      message = {"message": "error occurred"}
+      message = {"message": "error occurred", "data":[]}
       return Response(message, status=status.HTTP_400_BAD_REQUEST)
-  message= {"message": "Invalid Token"}
+  message= {"message": "Invalid Token", "data": []}
   return Response(message)
   
 @api_view(['Put'])
@@ -113,6 +127,7 @@ def updateTask(request, id):
   if verify_token(request=request):
     try:
       data = json.loads(request.body)
+      logger.warning("update",data)
       task = Todo.objects.get(pk=id)
       task.task = data['task']
       task.save()

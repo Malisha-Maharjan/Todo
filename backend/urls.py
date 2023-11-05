@@ -3,11 +3,11 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('user/', createUser),
-    path('get', userLogin),
-    path('task', addToDo),
-    path('get/todo/<str:username>', getToDo),
-    path('complete/todo/<int:id>', completedTask),
-    path('update/todo/<int:id>', updateTask),
-    path('delete/todo/<int:id>', deleteTask),
+    path('register', createUser),
+    path('login', userLogin),
+    path('todo/add', addToDo),
+    path('todo/get/<str:username>', getToDo),
+    path('todo/toggle/<int:id>', toggleTask),
+    path('todo/update/<int:id>', updateTask),
+    path('todo/delete/<int:id>', deleteTask),
 ]
