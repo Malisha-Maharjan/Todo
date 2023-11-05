@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { TodoScreen } from "../Todo/TodoScreen";
 // import { UserContext } from "./context";
-import { useUserContext } from "../../context/userContext";
-import { saveUsername } from "../../helpers/sessionStorage";
+// import { useUserContext } from "../../context/userContext";
+import { saveToken, saveUsername } from "../../helpers/sessionStorage";
 import { theme } from "../../theme/theme";
 import styles from "./style.module.css";
 
@@ -23,7 +23,7 @@ export const LoginScreen = () => {
   const [isLogin, setIsLogin] = useState(false);
   // const [token, setToken] = useState("");
 
-  const { setUsername: setContextUsername } = useUserContext();
+  // const { setUsername: setContextUsername } = useUserContext();
   sessionStorage.clear();
   const loginApi = async (credentials: LoginCredential) => {
     const data = await fetch("http://127.0.0.1:8000/api/login", {
@@ -46,13 +46,11 @@ export const LoginScreen = () => {
     mutationFn: loginApi,
     onSuccess: (response) => {
       setMessage(response.message);
-      setContextUsername(username);
-      if (isLogin) {
-        console.log("i am logged in");
-        console.log(response.data);
-        window.sessionStorage.setItem("token", response.data);
-        saveUsername(username);
-      }
+      // setContextUsername(username);
+      console.log("i am logged in");
+      console.log(response.data);
+      saveToken(response.data);
+      saveUsername(username);
     },
   });
 

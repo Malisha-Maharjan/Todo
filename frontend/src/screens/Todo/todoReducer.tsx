@@ -1,6 +1,6 @@
 export type TodoState = {
   // is_compeleted: boolean;
-  task: string;
+  task: string | null;
 };
 
 export enum TodoActionKind {
@@ -9,11 +9,6 @@ export enum TodoActionKind {
   CLEAR = "CLEAR",
   // DELETE = "DELETE",
 }
-
-type TodoAction = {
-  type: TodoActionKind;
-  payload: TodoState;
-};
 
 export const addReducer = (state: TodoState, action: any): TodoState => {
   const { type, payload } = action;
@@ -26,6 +21,12 @@ export const addReducer = (state: TodoState, action: any): TodoState => {
   }
   switch (type) {
     case TodoActionKind.CLEAR:
+      return {
+        task: payload,
+      };
+  }
+  switch (type) {
+    case TodoActionKind.UPDATE:
       return {
         task: payload,
       };

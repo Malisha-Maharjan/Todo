@@ -1,11 +1,13 @@
 import { Dispatch, SetStateAction, createContext } from "react";
 // const [add, setAdd] = useState(" ");
-type addContext = {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+type updateContext = {
+  update: boolean;
+  id: number | null;
+  setUpdate: Dispatch<SetStateAction<boolean>>;
 };
 
-export const myContext = createContext<addContext>({
-  open: false,
-  setOpen: () => {},
+export const UpdateTodo = createContext<updateContext>({
+  update: false,
+  id: null,
+  setUpdate: () => {},
 });
