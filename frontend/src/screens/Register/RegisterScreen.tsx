@@ -19,7 +19,6 @@ export const RegisterScreen = () => {
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [isAlert, setisAlert] = useState(false);
   const navigate = useNavigate();
 
   const { isError, error, mutateAsync: register } = useRegister();
@@ -43,7 +42,6 @@ export const RegisterScreen = () => {
     }
     navigate("/todo");
   };
-  // if (isError) return <p>{error.message}</p>;
 
   return (
     <ThemeProvider theme={theme}>

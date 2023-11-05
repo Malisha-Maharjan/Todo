@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getToken, getUsername } from "../helpers/sessionStorage";
 
+import { baseURL } from "../helpers/baseURL";
+
 export const useFetchTodos = () => {
   const username = getUsername();
   const token = getToken();
@@ -8,16 +10,13 @@ export const useFetchTodos = () => {
   return useQuery({
     queryKey: ["todos", username],
     queryFn: async () => {
-      const data = await fetch(
-        `http://127.0.0.1:8000/api/todo/get/${username}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const data = await fetch(`${baseURL}/api/todo/get/${username}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data.json();
     },
     enabled: !!username,
@@ -34,7 +33,7 @@ export const useAddTodo = () => {
   const token = getToken();
   return useMutation({
     mutationFn: async ({ task }: AddTodoParams) => {
-      const data = await fetch("http://127.0.0.1:8000/api/todo/add", {
+      const data = await fetch(`${baseURL}/api/todo/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +62,7 @@ export const useToggleTodo = () => {
 
   return useMutation({
     mutationFn: async ({ id, checked }: ToggleTodoParams) => {
-      const data = await fetch(`http://127.0.0.1:8000/api/todo/toggle/${id}`, {
+      const data = await fetch(`${baseURL}/api/todo/toggle/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +89,7 @@ export const useDeleteTodo = () => {
 
   return useMutation({
     mutationFn: async ({ id }: DeleteTodoParams) => {
-      const data = await fetch(`http://127.0.0.1:8000/api/todo/delete/${id}`, {
+      const data = await fetch(`${baseURL}/api/todo/delete/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +116,7 @@ export const useUpdateTodo = () => {
 
   return useMutation({
     mutationFn: async ({ task, id }: UpdateTodoParams) => {
-      const data = await fetch(`http://127.0.0.1:8000/api/todo/update/${id}`, {
+      const data = await fetch(`${baseURL}/api/todo/update/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { baseURL } from "../helpers/baseURL";
 
 type RegisterParams = {
   username: string;
@@ -10,7 +11,7 @@ type RegisterParams = {
 export const useRegister = () => {
   return useMutation({
     mutationFn: async (dataPost: RegisterParams) => {
-      const data = await fetch("http://127.0.0.1:8000/api/register", {
+      const data = await fetch(`${baseURL}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
