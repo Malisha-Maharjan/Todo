@@ -7,10 +7,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 400px;
+  height: 500px;
   width: 300px;
-  row-gap: 10px;
-  padding: 50px;
+  row-gap: 15px;
+  padding: 0px 50px 50px 50px;
   margin: 20px 0px 0px 0px;
 }
 
@@ -23,11 +23,26 @@
   flex-direction: row;
   /* align-items: center; */
   justify-content: center;
-  column-gap: 10px;
+  column-gap: 15px;
   margin-top: 20px;
+  /* width: 600px; */
 }
 
-.textField {
-  width: 250px;
-  /* margin: 0px 0px 10px 0px; */
+.errorMessage {
+  color: rgb(104, 31, 31);
+  text-decoration: underline;
+  font-weight: bolder;
+}
+
+.heading {
+  height: 200px;
+  background-color: #233758;
+  color: whitesmoke;
+  width: 400px;
+  padding: 10px;
+  text-align: center;
+}
+
+.logo {
+  margin: 20px 0px 30px 0px;
 }
