@@ -17,7 +17,6 @@ def verify_token(request):
       SIMPLE_JWT['SIGNING_KEY'],
       algorithms=[SIMPLE_JWT['ALGORITHM']]
     )
-    logger.warning(payload)
     return True
   except Exception as e:
-    return True
+    return False
