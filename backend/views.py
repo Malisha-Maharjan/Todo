@@ -20,6 +20,7 @@ def create_user(request):
 
     try:
         data = json.loads(request.body)
+        logger.warning(data)
         user_serializer = UserSerializer(data=data)
         user = User.objects.filter(username=data['username'])
 

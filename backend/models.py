@@ -10,3 +10,4 @@ class Todo(models.Model):
 
     class Meta():
         ordering = ("is_completed", "created_at")
+        default_permissions = ()
