@@ -3,9 +3,6 @@ import Card from "@mui/material/Card";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { TodoScreen } from "../Todo/TodoScreen";
-// import { UserContext } from "./context";
-// import { useUserContext } from "../../context/userContext";
 import { saveToken, saveUsername } from "../../helpers/sessionStorage";
 import { theme } from "../../theme/theme";
 import styles from "./style.module.css";
@@ -21,9 +18,7 @@ export const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLogin, setIsLogin] = useState(false);
-  // const [token, setToken] = useState("");
 
-  // const { setUsername: setContextUsername } = useUserContext();
   sessionStorage.clear();
   const loginApi = async (credentials: LoginCredential) => {
     const data = await fetch("http://127.0.0.1:8000/api/login", {
@@ -33,9 +28,7 @@ export const LoginScreen = () => {
       },
       body: JSON.stringify(credentials),
     });
-    // setStatus(data.status);
-    // console.log(data.status);
-    console.log(typeof data.status);
+
     if (data.status === 200) {
       setIsLogin(true);
     }
@@ -58,8 +51,7 @@ export const LoginScreen = () => {
     event.preventDefault();
     login({ username: username, password });
   };
-  // const buttonStyle = useButtonStyle();
-  // const textFieldStyles = useTextStyle();
+
   return (
     <>
       {/* <UserContext.Provider value={userName}>
@@ -81,15 +73,13 @@ export const LoginScreen = () => {
               height={"150"}
               className={styles.logo}
             ></img>
-            {/* <div className={styles.textField}> */}
             <TextField
               required
               label="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              // className={textFieldStyles.input}
-              // color="secondary"
             />
+
             <TextField
               required
               label="Password"
@@ -97,11 +87,7 @@ export const LoginScreen = () => {
               value={password}
               size="medium"
               onChange={(e) => setPassword(e.target.value)}
-
-              // className={textFieldStyles.input}
-              // color="secondary"
             />
-            {/* </div> */}
 
             <div className={styles.buttonField}>
               <Button

@@ -9,7 +9,6 @@ import {
   Checkbox,
   Paper,
   TextField,
-  ThemeProvider,
   Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -22,10 +21,10 @@ import {
   useFetchTodos,
   useToggleTodo,
 } from "../../hooks/useTodosApi";
-import { theme } from "../../theme/theme";
 import { AddScreen } from "./editScreen";
 import styles from "./style.module.css";
 import { TodoActionKind, addReducer } from "./todoReducer";
+
 export const TodoScreen = () => {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(addReducer, { task: "" });
@@ -38,7 +37,7 @@ export const TodoScreen = () => {
   const { mutate: addTodo } = useAddTodo();
   const { mutate: toggleTodo } = useToggleTodo();
   const { mutate: deleteTodo } = useDeleteTodo();
-  console.log(data);
+
   const onAddClick = (event: any) => {
     event.preventDefault();
     if (state.task === "") console.log("fill the form");
@@ -50,6 +49,7 @@ export const TodoScreen = () => {
       });
     }
   };
+
   const onCheckBoxClicked = (id: number, checked: boolean) =>
     toggleTodo({ id, checked: !checked });
   const onDeleteClick = (id: number) => deleteTodo({ id });
@@ -63,112 +63,109 @@ export const TodoScreen = () => {
     <>
       <div className={styles.mainField}>
         <Card variant="outlined" sx={{ minWidth: 600, minHeight: 700 }}>
-          <ThemeProvider theme={theme}>
-            <div className={styles.topBar}>
-              <Typography variant="h4" color="info" margin={"20px"}>
-                Welcome {username}
-              </Typography>
-              <IconButton onClick={() => navigate("/")}>
-                <LogoutIcon fontSize="large" color="secondary" />
-              </IconButton>
-            </div>
-            <div className={styles.cardField}>
-              <form onSubmit={onAddClick} className={styles.addForm}>
-                <TextField
-                  label="Add New Task"
-                  variant="outlined"
-                  value={state.task}
-                  sx={{ width: 600 }}
-                  onChange={(e) =>
-                    dispatch({
-                      type: TodoActionKind.INSERT,
-                      payload: e.target.value,
-                    })
-                  }
-                />
-                <Button
-                  variant="contained"
-                  type="submit"
-                  startIcon={<PostAddOutlinedIcon />}
-                >
-                  Add
-                </Button>
-              </form>
+          <div className={styles.topBar}>
+            <Typography variant="h4" color="info" margin={"20px"}>
+              Welcome {username}
+            </Typography>
+            <IconButton onClick={() => navigate("/")}>
+              <LogoutIcon
+                fontSize="large"
+                color="secondary"
+                className={styles.iconButton}
+              />
+            </IconButton>
+          </div>
+          <div className={styles.cardField}>
+            <form onSubmit={onAddClick} className={styles.addForm}>
+              <TextField
+                label="Add New Task"
+                variant="outlined"
+                value={state.task}
+                sx={{ width: 600 }}
+                onChange={(e) =>
+                  dispatch({
+                    type: TodoActionKind.INSERT,
+                    payload: e.target.value,
+                  })
+                }
+              />
+              <Button
+                variant="contained"
+                type="submit"
+                startIcon={<PostAddOutlinedIcon />}
+              >
+                Add
+              </Button>
+            </form>
 
-              <div className={styles.todoCard}>
-                {data.data.map((task: any) => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      "& > :not(style)": {
-                        m: 1,
-                        width: 500,
-                        height: 50,
-                      },
-                    }}
-                    key={task.id}
+            <div className={styles.todoCard}>
+              {data.data.map((task: any) => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    "& > :not(style)": {
+                      m: 1,
+                      width: 500,
+                      height: 50,
+                    },
+                  }}
+                  key={task.id}
+                >
+                  <Paper
+                    elevation={task.is_completed ? 0 : 24}
+                    className={styles.taskBar}
+                    variant={task.is_completed ? "outlined" : "elevation"}
                   >
-                    <Paper
-                      elevation={task.is_completed ? 0 : 24}
-                      className={styles.taskBar}
-                      variant={task.is_completed ? "outlined" : "elevation"}
+                    <Typography
+                      variant="subtitle1"
+                      className={
+                        task.is_completed ? styles.strikeText : undefined
+                      }
                     >
-                      <Typography
-                        variant="subtitle1"
-                        className={
-                          task.is_completed ? styles.strikeText : undefined
-                        }
+                      {task.task}
+                    </Typography>
+                    <div>
+                      <IconButton
+                        disabled={task.is_completed}
+                        onClick={() => {
+                          setUpdate(true), setId(task.id), setTask(task.task);
+                        }}
                       >
-                        {task.task}
-                      </Typography>
-                      <div>
-                        <IconButton
-                          disabled={task.is_completed}
-                          onClick={() => {
-                            setUpdate(true), setId(task.id), setTask(task.task);
-                          }}
-                        >
-                          <EditIcon
-                            fontSize="medium"
-                            color="primary"
-                            titleAccess="Edit"
-                          />
-                        </IconButton>
-                        <IconButton onClick={() => onDeleteClick(task.id)}>
-                          <DeleteOutlineIcon
-                            fontSize="medium"
-                            color="primary"
-                            titleAccess="Delete"
-                          />
-                        </IconButton>
-                        <Checkbox
-                          onClick={() =>
-                            onCheckBoxClicked(task.id, task.is_completed)
-                          }
-                          defaultChecked={task.is_completed}
-                          color="secondary"
+                        <EditIcon
+                          fontSize="medium"
+                          color="primary"
+                          titleAccess="Edit"
                         />
-                      </div>
-                    </Paper>
-                  </Box>
-                ))}
-              </div>
-              {/* {update && (
-                <UpdateTodo.Provider value={{ update, id, setUpdate }}>
-                <AddScreen />
-                </UpdateTodo.Provider>
-              )} */}
-              {update && (
-                <AddScreen
-                  update={update}
-                  onClick={onEditClick}
-                  id={parseInt(id)}
-                  task={task}
-                />
-              )}
+                      </IconButton>
+                      <IconButton onClick={() => onDeleteClick(task.id)}>
+                        <DeleteOutlineIcon
+                          fontSize="medium"
+                          color="primary"
+                          titleAccess="Delete"
+                        />
+                      </IconButton>
+                      <Checkbox
+                        onClick={() =>
+                          onCheckBoxClicked(task.id, task.is_completed)
+                        }
+                        checked={task.is_completed}
+                        color="secondary"
+                      />
+                    </div>
+                  </Paper>
+                </Box>
+              ))}
             </div>
-          </ThemeProvider>
+            {update && (
+              <AddScreen
+                update={update}
+                onClick={onEditClick}
+                id={parseInt(id)}
+                task={task}
+              />
+            )}
+          </div>
         </Card>
       </div>
     </>

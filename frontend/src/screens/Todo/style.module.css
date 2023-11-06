@@ -61,3 +61,7 @@
   row-gap: 20px;
   padding: 20px;
 }
+
+.iconButton:hover {
+  color: #f2f6ff;
+}
