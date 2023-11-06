@@ -9,14 +9,15 @@ from Todo.settings import SIMPLE_JWT
 
 logger = logging.getLogger(__name__)
 
+
 def verify_token(request):
-  try: 
-    token = request.headers.get('Authorization').split()
-    payload = jwt.decode(
-      token[1],
-      SIMPLE_JWT['SIGNING_KEY'],
-      algorithms=[SIMPLE_JWT['ALGORITHM']]
-    )
-    return True
-  except Exception as e:
-    return False
+    try:
+        token = request.headers.get('Authorization').split()
+        payload = jwt.decode(
+            token[1],
+            SIMPLE_JWT['SIGNING_KEY'],
+            algorithms=[SIMPLE_JWT['ALGORITHM']]
+        )
+        return True
+    except Exception as e:
+        return False

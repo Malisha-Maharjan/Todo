@@ -5,12 +5,12 @@ from .models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = User
-    fields = ['username', 'password', 'email', 'first_name', 'last_name']
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'email', 'first_name', 'last_name']
 
 
 class ToDoSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Todo
-    fields = '__all__'
+    class Meta:
+        model = Todo
+        fields = '__all__'

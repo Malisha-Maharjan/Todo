@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import *
+from .views import (add_task, create_user, delete_task, edit_task, get_task,
+                    toggle_task, user_login)
 
 urlpatterns = [
     path('register', create_user),
