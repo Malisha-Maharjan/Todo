@@ -8,5 +8,5 @@ class Todo(models.Model):
     is_completed = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # class Meta(AbstractMeta.Meta):
-    #     swappable = "USER_AUTH_MODEL"
+    class Meta():
+        ordering = ("is_completed", "created_at")
