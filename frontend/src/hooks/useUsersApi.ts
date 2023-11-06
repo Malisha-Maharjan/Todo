@@ -8,7 +8,9 @@ type RegisterParams = {
   last_name: string;
   email: string;
 };
+
 export const useRegister = () => {
+  console.log({ baseURL });
   return useMutation({
     mutationFn: async (dataPost: RegisterParams) => {
       const data = await fetch(`${baseURL}/api/register`, {

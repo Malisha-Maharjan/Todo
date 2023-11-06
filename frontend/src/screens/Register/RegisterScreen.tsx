@@ -38,7 +38,7 @@ export const RegisterScreen = () => {
       });
       console.log(isError);
       saveUsername(username);
-      saveToken(result.message);
+      saveToken(result.data);
     }
     navigate("/todo");
   };

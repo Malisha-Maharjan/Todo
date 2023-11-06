@@ -116,7 +116,7 @@ export const useUpdateTodo = () => {
 
   return useMutation({
     mutationFn: async ({ task, id }: UpdateTodoParams) => {
-      const data = await fetch(`${baseURL}/api/todo/update/${id}`, {
+      const data = await fetch(`${baseURL}/api/todo/edit/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -54,7 +54,8 @@ export const LoginScreen = () => {
     },
   });
 
-  const HandleOnClick = () => {
+  const HandleOnClick = (event: any) => {
+    event.preventDefault();
     login({ username: username, password });
   };
   // const buttonStyle = useButtonStyle();

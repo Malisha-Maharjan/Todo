@@ -31,13 +31,14 @@ export const TodoScreen = () => {
   const [state, dispatch] = useReducer(addReducer, { task: "" });
   const [update, setUpdate] = useState(false);
   const [id, setId] = useState("");
+  const [task, setTask] = useState("");
   const username = getUsername();
 
   const { data, isLoading } = useFetchTodos();
   const { mutate: addTodo } = useAddTodo();
   const { mutate: toggleTodo } = useToggleTodo();
   const { mutate: deleteTodo } = useDeleteTodo();
-
+  console.log(data);
   const onAddClick = (event: any) => {
     event.preventDefault();
     if (state.task === "") console.log("fill the form");
@@ -61,10 +62,7 @@ export const TodoScreen = () => {
   return (
     <>
       <div className={styles.mainField}>
-        <Card
-          variant="outlined"
-          sx={{ minWidth: 600, minHeight: 600, maxHeight: 600 }}
-        >
+        <Card variant="outlined" sx={{ minWidth: 600, minHeight: 700 }}>
           <ThemeProvider theme={theme}>
             <div className={styles.topBar}>
               <Typography variant="h4" color="info" margin={"20px"}>
@@ -128,7 +126,7 @@ export const TodoScreen = () => {
                         <IconButton
                           disabled={task.is_completed}
                           onClick={() => {
-                            setUpdate(true), setId(task.id);
+                            setUpdate(true), setId(task.id), setTask(task.task);
                           }}
                         >
                           <EditIcon
@@ -158,7 +156,7 @@ export const TodoScreen = () => {
               </div>
               {/* {update && (
                 <UpdateTodo.Provider value={{ update, id, setUpdate }}>
-                  <AddScreen />
+                <AddScreen />
                 </UpdateTodo.Provider>
               )} */}
               {update && (
@@ -166,6 +164,7 @@ export const TodoScreen = () => {
                   update={update}
                   onClick={onEditClick}
                   id={parseInt(id)}
+                  task={task}
                 />
               )}
             </div>

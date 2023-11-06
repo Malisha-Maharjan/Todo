@@ -11,17 +11,19 @@ type propsParams = {
   update: boolean;
   onClick: any;
   id: number | null;
+  task: string | null;
 };
-export const AddScreen = ({ update, onClick, id }: propsParams) => {
+export const AddScreen = ({ update, onClick, id, task }: propsParams) => {
   const todoInitializer: TodoState = {
-    task: null,
+    task: task,
   };
 
   const [state, dispatch] = useReducer(addReducer, todoInitializer);
 
   const { mutate: updateTodo } = useUpdateTodo();
 
-  const onEditClick = () => {
+  const onEditClick = (event: any) => {
+    event.preventDefault();
     onClick();
     updateTodo({ task: state.task, id });
     dispatch({
@@ -48,8 +50,7 @@ export const AddScreen = ({ update, onClick, id }: propsParams) => {
             <Paper elevation={3}>
               <form onSubmit={onEditClick} className={styles.updateTask}>
                 <TextField
-                  required
-                  label="Task"
+                  // required
                   variant="filled"
                   value={state.task}
                   sx={{ width: 400 }}
