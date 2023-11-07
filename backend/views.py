@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from .models import Todo
 from .serializer import ToDoSerializer, UserSerializer
+from .utils.todo_permission import todo_permission
 from .utils.token.generate_token import generate_token
 from .utils.token.verify_token import verify_token
 
@@ -19,8 +20,8 @@ def create_user(request):
     """create user api"""
 
     try:
+        logger.warning("create_user")
         data = json.loads(request.body)
-        logger.warning(data)
         user_serializer = UserSerializer(data=data)
         user = User.objects.filter(username=data['username'])
 
@@ -64,16 +65,20 @@ def user_login(request):
 
 
 @api_view(['Post'])
+@todo_permission
 def add_task(request):
     """add new task api"""
-
-    if verify_token(request=request):
+    username = verify_token(request=request)
+    if username:
         data = json.loads(request.body)
 
         try:
-            user = User.objects.get(username=data['username'])
+            user = User.objects.get(username=username)
         except Exception as e:
             return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
+
+        logger.warning('Checking permission')
+        logger.warning(user.has_perm('backend.manage_todo'))
 
         try:
             task = Todo(task=data['task'], user=user)
@@ -91,10 +96,12 @@ def add_task(request):
 
 
 @api_view(['Get'])
-def get_task(request, username):
+# @todo_permission
+def get_task(request):
     """get all the task api"""
-
-    if verify_token(request=request):
+    logger.warning("getting todo")
+    username = verify_token(request=request)
+    if username:
         try:
             user = User.objects.get(username=username)
             task = Todo.objects.filter(user=user)
@@ -116,6 +123,7 @@ def get_task(request, username):
 
 
 @api_view(['Put'])
+@todo_permission
 def toggle_task(request, task_id):
     """toggle the existing task api"""
 
@@ -137,9 +145,10 @@ def toggle_task(request, task_id):
 
 
 @api_view(['Put'])
+@todo_permission
 def edit_task(request, task_id):
     """edit the existing task api"""
-
+    
     if verify_token(request=request):
         try:
             data = json.loads(request.body)
@@ -157,6 +166,7 @@ def edit_task(request, task_id):
 
 
 @api_view(['Delete'])
+@todo_permission
 def delete_task(request, task_id):
     """delete the task api"""
 
