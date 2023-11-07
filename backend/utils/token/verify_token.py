@@ -1,16 +1,13 @@
 import logging
 
 import jwt
-from django.http import HttpResponse
-from rest_framework import status
-from rest_framework.response import Response
-
 from Todo.settings import SIMPLE_JWT
 
 logger = logging.getLogger(__name__)
 
 
 def verify_token(request):
+    """verify jwt token """
     try:
         token = request.headers.get('Authorization').split()
         payload = jwt.decode(
@@ -18,6 +15,6 @@ def verify_token(request):
             SIMPLE_JWT['SIGNING_KEY'],
             algorithms=[SIMPLE_JWT['ALGORITHM']]
         )
-        return True
+        return payload['username']
     except Exception as e:
         return False

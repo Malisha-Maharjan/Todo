@@ -11,3 +11,9 @@ class Todo(models.Model):
     class Meta():
         ordering = ("is_completed", "created_at")
         default_permissions = ()
+        permissions = (("view_todo_list", "can view the todo list"),
+                       ("manage_todo", "create, update, delete, or toggle the todo"))
+
+
+# class ListItem(models.Model):
+#     name = models.CharField(max_length=10)
