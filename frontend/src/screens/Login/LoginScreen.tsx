@@ -68,7 +68,7 @@ export const LoginScreen = () => {
               Welcome
             </Typography>
             <img
-              src="../public/images/Varicon-logo.png.webp"
+              src="./images/Varicon-logo.png.webp"
               width="150"
               height={"150"}
               className={styles.logo}

@@ -10,7 +10,7 @@ export const useFetchTodos = () => {
   return useQuery({
     queryKey: ["todos", username],
     queryFn: async () => {
-      const data = await fetch(`${baseURL}/api/todo/get/${username}`, {
+      const data = await fetch(`${baseURL}/api/todo/get`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

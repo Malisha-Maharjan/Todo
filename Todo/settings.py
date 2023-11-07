@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -30,7 +31,10 @@ SECRET_KEY = 'django-insecure-1)ssf5knzl$i@y--@7h9!^6*-i^592u78rod9a^94m5@6n%+s9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = [
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+# ]
 
 
 # Application definition
@@ -144,7 +148,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-from datetime import timedelta
 
 ...
 
