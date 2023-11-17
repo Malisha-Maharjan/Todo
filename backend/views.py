@@ -1,5 +1,7 @@
+import datetime
 import json
 import logging
+from datetime import date
 
 from django.contrib.auth.models import User
 from rest_framework import status
@@ -51,15 +53,16 @@ def create_user(request):
 def user_login(request):
     """user login api"""
 
-    user = json.loads(request.body)
-
+    data = json.loads(request.body)
     try:
         user = User.objects.get(
-            password=user['password'], username=user['username'])
+            password=data['password'], username=data['username'])
         serializer = UserSerializer(user, many=False)
-        token = {"message": "Login successful", "data": generate_token(user)}
+        token = {"message": "Login successful", "data": generate_token(
+            user), "username": data['username']}
         return Response(token, status=status.HTTP_200_OK)
     except Exception as e:
+        logger.warning(e)
         message = {"message": "Invalid UserName or password", "data": []}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,7 +74,11 @@ def add_task(request):
     username = verify_token(request=request)
     if username:
         data = json.loads(request.body)
+        date1 = datetime.datetime.strptime(
+            data['date'], "%Y-%m-%dT%H:%M:%S.%f%z")
 
+        data['date'] = datetime.datetime.strftime(date1, '%Y-%m-%d')
+        logger.warning(data)
         try:
             user = User.objects.get(username=username)
         except Exception as e:
@@ -81,13 +88,21 @@ def add_task(request):
         logger.warning(user.has_perm('backend.manage_todo'))
 
         try:
-            task = Todo(task=data['task'], user=user)
+            todo = Todo.objects.filter(user=user).last()
+            # logger.warning(todos)
+            if (todo is not None):
+                task = Todo(
+                    task=data['task'], description=data['description'], user=user, schedule_at=data['date'], index=todo.index+1)
+            else:
+                task = Todo(
+                    task=data['task'], description=data['description'], user=user, schedule_at=data['date'], index=0)
             logger.warning(task.task)
             task.save()
             serializer = ToDoSerializer(task, many=False)
             logger.warning(serializer.data)
         except Exception as e:
-            return Response(str(e))
+            logger.warning(e)
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         message = {"message": "Successful", "data": serializer.data}
         return Response(message, status=status.HTTP_200_OK)
 
@@ -105,6 +120,34 @@ def get_task(request):
         try:
             user = User.objects.get(username=username)
             task = Todo.objects.filter(user=user)
+
+            if task:
+                serializer = ToDoSerializer(task, many=True)
+                message = {"message": "", "data": serializer.data}
+                logger.warning(serializer.data)
+                return Response(message)
+
+            message = {"message": "No Task Added", "data": []}
+            return Response(message, status=status.HTTP_200_OK)
+        except Exception as e:
+            message = {"message": "error occurred.", "data": []}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+    message = {"message": "Invalid Token"}
+    return Response(message)
+
+
+@api_view(['Get'])
+# @todo_permission
+def get_task_today(request):
+    """get all the today task api"""
+    logger.warning("getting todo")
+    username = verify_token(request=request)
+    if username:
+        try:
+            user = User.objects.get(username=username)
+            logger.warning(date.today())
+            task = Todo.objects.filter(user=user, schedule_at=date.today())
 
             if task:
                 serializer = ToDoSerializer(task, many=True)
@@ -148,17 +191,22 @@ def toggle_task(request, task_id):
 @todo_permission
 def edit_task(request, task_id):
     """edit the existing task api"""
-    
+
     if verify_token(request=request):
         try:
             data = json.loads(request.body)
+            logger.warning(data)
             task = Todo.objects.get(pk=task_id)
+
             task.task = data['task']
+            task.description = data['description']
+            task.schedule_at = data['schedule_at']
             task.save()
             message = {"message": "updated"}
             return Response(message, status=status.HTTP_200_OK)
         except Exception as e:
             message = {"message": "error occurred"}
+            logger.warning(e)
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
     message = {"message": "Invalid Token"}
@@ -175,10 +223,45 @@ def delete_task(request, task_id):
             task = Todo.objects.get(pk=task_id)
             task.delete()
             message = {'message': "Deleted successfully"}
+            todos = Todo.objects.all()
+            logger.warning(todos)
+            if (todos):
+                index = 0
+                for todo in todos:
+                    serializer = ToDoSerializer(todo, many=False)
+                    t = Todo.objects.get(pk=serializer.data['id'])
+                    t.index = index
+                    index += 1
+                    t.save()
             return Response(message, status=status.HTTP_200_OK)
         except Exception as e:
+            logger.warning(e)
             message = {"message": str(e)}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
     message = {"message": "Invalid Token"}
     return Response(message)
+
+
+@api_view(['POST'])
+@todo_permission
+def drag_and_drop(request):
+    if verify_token(request=request):
+        data = json.loads(request.body)
+        logger.warning(data['data'])
+        index = 0
+        for task in data['data']:
+            todo = Todo.objects.get(pk=task['id'])
+            todo.index = index
+            index += 1
+            todo.save()
+        return Response("ok")
+    message = {"message": "Invalid Token"}
+    return Response(message)
+
+# 0 -> 2, 0 -> 4
+# 1 -> 3, 1 -> 2
+# 2 -> 4, 2 -> 3
+
+
+# [4, 2, 3]
