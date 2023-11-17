@@ -1,0 +1,12 @@
+.taskBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+}
+
+.strikeText {
+  text-decoration: line-through;
+  color: #233758;
+}

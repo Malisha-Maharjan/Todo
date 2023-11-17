@@ -22,12 +22,14 @@ export const addReducer = (state: TodoState, action: any): TodoState => {
   switch (type) {
     case TodoActionKind.CLEAR:
       return {
+        ...state,
         task: payload,
       };
   }
   switch (type) {
     case TodoActionKind.UPDATE:
       return {
+        ...state,
         task: payload,
       };
   }

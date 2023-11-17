@@ -1,0 +1,37 @@
+.paperBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+  width: 500px;
+  height: 50px;
+}
+
+.taskBar {
+  display: flex;
+  flex-direction: column;
+}
+.strikeText {
+  text-decoration: line-through;
+  color: #233758;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+  color: #233758;
+  font-family: "roboto, sans-serif";
+  align-items: center;
+  column-gap: 5px;
+}
+
+.addButton {
+  color: red;
+}
+
+.content:hover,
+.addButton:hover {
+  color: #fcad36;
+}

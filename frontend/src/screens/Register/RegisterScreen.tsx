@@ -18,21 +18,18 @@ export const RegisterScreen = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    const result = await register({
+      username,
+      password,
+      first_name: firstname,
+      last_name: lastname,
+      email,
+    });
+    console.log({ result });
+    console.log(isError);
+    saveUsername(username);
+    saveToken(result.data);
 
-    if (email === "" || password === "" || username === "" || email === "") {
-      console.log("Please fill the form");
-    } else {
-      const result = await register({
-        username,
-        password,
-        first_name: firstname,
-        last_name: lastname,
-        email,
-      });
-      console.log(isError);
-      saveUsername(username);
-      saveToken(result.data);
-    }
     navigate("/todo");
   };
 
@@ -95,12 +92,10 @@ export const RegisterScreen = () => {
           >
             Register
           </Button>
-          {error !== null ? (
+          {error !== null && (
             <Alert severity="error" className={styles.alertBox}>
               {error.message}
             </Alert>
-          ) : (
-            <></>
           )}
         </form>
       </Card>

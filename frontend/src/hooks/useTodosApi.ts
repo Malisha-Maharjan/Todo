@@ -17,7 +17,37 @@ export const useFetchTodos = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      return data.json();
+      const response = await data.json();
+      if (data.status !== 200) {
+        console.log(response);
+        throw new Error(response.message);
+      }
+      return response;
+    },
+    enabled: !!username,
+  });
+};
+
+export const useFetchTodayTodos = () => {
+  const username = getUsername();
+  const token = getToken();
+
+  return useQuery({
+    queryKey: ["todos", username],
+    queryFn: async () => {
+      const data = await fetch(`${baseURL}/api/todo/get/today`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const response = await data.json();
+      if (data.status !== 200) {
+        console.log(response);
+        throw new Error(response.message);
+      }
+      return response;
     },
     enabled: !!username,
   });
@@ -25,6 +55,8 @@ export const useFetchTodos = () => {
 
 type AddTodoParams = {
   task: string | null;
+  description: any;
+  date: Date | null;
 };
 
 export const useAddTodo = () => {
@@ -32,17 +64,18 @@ export const useAddTodo = () => {
   const username = getUsername();
   const token = getToken();
   return useMutation({
-    mutationFn: async ({ task }: AddTodoParams) => {
+    mutationFn: async ({ task, description, date }: AddTodoParams) => {
       const data = await fetch(`${baseURL}/api/todo/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ task, username }),
+        body: JSON.stringify({ task, description, username, date }),
       });
-
-      return data.json();
+      const response = await data.json();
+      if (data.status !== 200) throw new Error(response.message);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", username] });
@@ -104,31 +137,54 @@ export const useDeleteTodo = () => {
   });
 };
 
-type UpdateTodoParams = {
+type EditTodoParams = {
   task: string | null;
   id: number | null;
+  description: string | null;
+  schedule_at: string | null;
 };
 
-export const useUpdateTodo = () => {
+export const useEditTodo = () => {
   const queryClient = useQueryClient();
   const username = getUsername();
   const token = getToken();
 
   return useMutation({
-    mutationFn: async ({ task, id }: UpdateTodoParams) => {
-      const data = await fetch(`${baseURL}/api/todo/edit/${id}`, {
+    mutationFn: async (value: EditTodoParams) => {
+      const data = await fetch(`${baseURL}/api/todo/edit/${value.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ task }),
+        body: JSON.stringify(value),
       });
-      console.log("task", task);
+      console.log("task", value);
       return data.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos", username] });
     },
+  });
+};
+
+export const useDragDropTodo = () => {
+  const token = getToken();
+
+  return useMutation({
+    mutationFn: async (dragAndDrop: any) => {
+      const data = await fetch(`${baseURL}/api/todo/drag/drop`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(dragAndDrop),
+      });
+      return data.json();
+    },
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries({ queryKey: ["todos", username] });
+    // },
   });
 };

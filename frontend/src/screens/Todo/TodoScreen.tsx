@@ -1,173 +1,69 @@
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import EditIcon from "@mui/icons-material/Edit";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
-import {
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import { useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getUsername } from "../../helpers/sessionStorage";
-import {
-  useAddTodo,
-  useDeleteTodo,
-  useFetchTodos,
-  useToggleTodo,
-} from "../../hooks/useTodosApi";
-import { AddScreen } from "./editScreen";
+// import LogoutIcon from "@mui/icons-material/Logout";
+// import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
+// import { Button, Card, TextField, Typography } from "@mui/material";
+// import IconButton from "@mui/material/IconButton";
+// import { useReducer } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { getUsername } from "../../helpers/sessionStorage";
+// import { useAddTodo } from "../../hooks/useTodosApi";
+import { useLocation } from "react-router-dom";
+import { NavBar } from "./Components/NavBar/navBar";
+import NavPage from "./Components/NavBar/navPage";
 import styles from "./style.module.css";
-import { TodoActionKind, addReducer } from "./todoReducer";
+// import { TodoGrid } from "./todoList";
+// import { TodoActionKind, addReducer } from "./todoReducer";
 
 export const TodoScreen = () => {
-  const navigate = useNavigate();
-  const [state, dispatch] = useReducer(addReducer, { task: "" });
-  const [update, setUpdate] = useState(false);
-  const [id, setId] = useState("");
-  const [task, setTask] = useState("");
-  const username = getUsername();
+  const current = new Date();
+  const date = new Date(
+    current.getFullYear(),
+    current.getMonth(),
+    current.getDate()
+  );
+  const month = date.toLocaleString("default", { month: "short" });
+  const week = date.toLocaleString("default", { weekday: "short" });
+  const day = date.toLocaleString("default", { day: "numeric" });
+  const location = useLocation();
+  console.log(location.pathname);
+  // const navigate = useNavigate();
+  // const [state, dispatch] = useReducer(addReducer, { task: "" });
+  // const username = getUsername();
 
-  const { data, isLoading } = useFetchTodos();
-  const { mutate: addTodo } = useAddTodo();
-  const { mutate: toggleTodo } = useToggleTodo();
-  const { mutate: deleteTodo } = useDeleteTodo();
+  // const { mutate: addTodo } = useAddTodo();
 
-  const onAddClick = (event: any) => {
-    event.preventDefault();
-    if (state.task === "") console.log("fill the form");
-    else {
-      addTodo({ task: state.task });
-      dispatch({
-        type: TodoActionKind.CLEAR,
-        payload: "",
-      });
-    }
-  };
-
-  const onCheckBoxClicked = (id: number, checked: boolean) =>
-    toggleTodo({ id, checked: !checked });
-  const onDeleteClick = (id: number) => deleteTodo({ id });
-  const onEditClick = () => {
-    setUpdate(!update);
-  };
-
-  if (isLoading) return <div>Loading Todos...</div>;
+  // const onAddClick = async (event: any) => {
+  //   event.preventDefault();
+  //   if (state.task === "") console.log("fill the form");
+  //   else {
+  //     addTodo({ task: state.task });
+  //     dispatch({
+  //       type: TodoActionKind.CLEAR,
+  //       payload: "",
+  //     });
+  //   }
+  // };
 
   return (
-    <>
-      <div className={styles.mainField}>
-        <Card variant="outlined" sx={{ minWidth: 600, minHeight: 700 }}>
-          <div className={styles.topBar}>
-            <Typography variant="h4" color="info" margin={"20px"}>
-              Welcome {username}
-            </Typography>
-            <IconButton onClick={() => navigate("/")}>
-              <LogoutIcon
-                fontSize="large"
-                color="secondary"
-                className={styles.iconButton}
-              />
-            </IconButton>
-          </div>
-          <div className={styles.cardField}>
-            <form onSubmit={onAddClick} className={styles.addForm}>
-              <TextField
-                label="Add New Task"
-                variant="outlined"
-                value={state.task}
-                sx={{ width: 600 }}
-                onChange={(e) =>
-                  dispatch({
-                    type: TodoActionKind.INSERT,
-                    payload: e.target.value,
-                  })
-                }
-              />
-              <Button
-                variant="contained"
-                type="submit"
-                startIcon={<PostAddOutlinedIcon />}
-              >
-                Add
-              </Button>
-            </form>
+    <div className={styles.mainField}>
+      <NavBar />
+      <div className={styles.contentField}>
+        <div>
+          <span style={{ fontWeight: "bold", fontSize: 30 }}>Today</span>
+          <span
+            style={{ fontWeight: "lighter", color: "gray", marginLeft: 10 }}
+          >
+            {week} {day} {month}{" "}
+          </span>
+        </div>
 
-            <div className={styles.todoCard}>
-              {data.data.map((task: any) => (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    "& > :not(style)": {
-                      m: 1,
-                      width: 500,
-                      height: 50,
-                    },
-                  }}
-                  key={task.id}
-                >
-                  <Paper
-                    elevation={task.is_completed ? 0 : 24}
-                    className={styles.taskBar}
-                    variant={task.is_completed ? "outlined" : "elevation"}
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      className={
-                        task.is_completed ? styles.strikeText : undefined
-                      }
-                    >
-                      {task.task}
-                    </Typography>
-                    <div>
-                      <IconButton
-                        disabled={task.is_completed}
-                        onClick={() => {
-                          setUpdate(true), setId(task.id), setTask(task.task);
-                        }}
-                      >
-                        <EditIcon
-                          fontSize="medium"
-                          color="primary"
-                          titleAccess="Edit"
-                        />
-                      </IconButton>
-                      <IconButton onClick={() => onDeleteClick(task.id)}>
-                        <DeleteOutlineIcon
-                          fontSize="medium"
-                          color="primary"
-                          titleAccess="Delete"
-                        />
-                      </IconButton>
-                      <Checkbox
-                        onClick={() =>
-                          onCheckBoxClicked(task.id, task.is_completed)
-                        }
-                        checked={task.is_completed}
-                        color="secondary"
-                      />
-                    </div>
-                  </Paper>
-                </Box>
-              ))}
-            </div>
-            {update && (
-              <AddScreen
-                update={update}
-                onClick={onEditClick}
-                id={parseInt(id)}
-                task={task}
-              />
-            )}
-          </div>
-        </Card>
+        <NavPage />
       </div>
-    </>
+      {/* {(location.pathname === "/todo" ||
+        location.pathname === "/todo/todolist/add") && (
+        <>
+          <TodayField />
+        </>
+      )} */}
+    </div>
   );
 };

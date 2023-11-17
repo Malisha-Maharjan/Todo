@@ -1,0 +1,10 @@
+.addForm {
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+}
+
+input {
+  text-decoration: none;
+  height: 100px;
+}
