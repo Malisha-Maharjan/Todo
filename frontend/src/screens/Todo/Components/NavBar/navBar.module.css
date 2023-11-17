@@ -1,0 +1,20 @@
+.content {
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+  color: black;
+  font-family: "roboto, sans-serif";
+  align-items: center;
+  column-gap: 5px;
+}
+
+.content:hover,
+.content:active {
+  /* color: red; */
+  background-color: rgb(255, 243, 230);
+}
+
+.content:focus,
+.selected {
+  background-color: bisque;
+}
